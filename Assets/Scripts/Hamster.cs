@@ -5,7 +5,7 @@ public class Hamster : MonoBehaviour {
 	public float hp = 100;
 	public float mp = 0;
 
-	[SerializeField]
+	[SerializeField] //Hao - why necessary ?
 	private float _distanceFromCenter = 1;
 	public float distanceFromCenter {
 		get {
