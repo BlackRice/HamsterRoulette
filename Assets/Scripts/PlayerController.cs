@@ -14,15 +14,15 @@ public class PlayerController : MonoBehaviour {
 
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Z)) {
-			hamster.DoPrimaryAttack();
+			hamster.DoPrimaryAttack(Game.current.hamsters[1]);
 		}
 
 		if (Input.GetKeyDown(KeyCode.X)) {
-			hamster.DoSecondaryAttack();
+			hamster.DoSecondaryAttack(Game.current.hamsters[1]);
 		}
 
 		if (Input.GetKeyDown(KeyCode.C)) {
-			hamster.DoSuperAttack();
+			hamster.DoSuperAttack(Game.current.hamsters[1]);
 		}
 	}
 }
