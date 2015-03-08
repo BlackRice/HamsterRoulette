@@ -1,28 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour {
-	private Hamster _hamster;
-	public Hamster hamster {
-		get {
-			if (!_hamster) {
-				_hamster = gameObject.GetComponent<Hamster>();
-			}
-			return _hamster;
-		}
-	}
+public class PlayerController : Controller {
+
 
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Z)) {
-			hamster.DoPrimaryAttack(Game.current.hamsters[1]);
+			hamster.DoPrimaryAttack(hamster.target);
 		}
 
 		if (Input.GetKeyDown(KeyCode.X)) {
-			hamster.DoSecondaryAttack(Game.current.hamsters[1]);
+			hamster.DoSecondaryAttack(hamster.target);
 		}
 
 		if (Input.GetKeyDown(KeyCode.C)) {
-			hamster.DoSuperAttack(Game.current.hamsters[1]);
+			hamster.DoSuperAttack(hamster.target);
 		}
+	}
+
+	void FixedUpdate() {
+		float tilt = Input.GetAxis("Horizontal");
+		
+		//hamster.velocity -= tilt*360.0f*Time.fixedDeltaTime;
+		hamster.desiredPositionOnWheel -= tilt*360.0f*Time.fixedDeltaTime;
+		hamster.desiredPositionOnWheel = Mathf.Clamp(hamster.desiredPositionOnWheel, 180-90, 180+90);
 	}
 }

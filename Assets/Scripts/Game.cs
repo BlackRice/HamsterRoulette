@@ -25,6 +25,8 @@ public class Game:MonoBehaviour {
 	}
 
 	void Start() {
+		Application.targetFrameRate = 60;
+
 		if (playerCount < 1) {
 			throw new System.Exception("playerCount must be higher than 0.");
 		}
@@ -36,6 +38,10 @@ public class Game:MonoBehaviour {
 			hamster.distanceFromCenter = 0.6f+(float)i*0.3f;
 		}
 
+		hamsters[0].target = hamsters[1];
+		hamsters[1].target = hamsters[0];
+
 		playerHamster.gameObject.AddComponent<PlayerController>();
+		hamsters[1].gameObject.AddComponent<AIController>();
 	}
 }
