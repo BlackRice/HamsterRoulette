@@ -12,6 +12,8 @@ public class Hamster : MonoBehaviour {
 
 	public Hamster target;
 
+	public bool isDead {get; private set;}
+
 	[SerializeField] //Hao - why necessary ?
 	private float _distanceFromCenter = 1;
 	public float distanceFromCenter {
@@ -20,7 +22,13 @@ public class Hamster : MonoBehaviour {
 		}
 		set {
 			_distanceFromCenter = value;
-			UpdatePosition();
+			transform.localPosition = idleLocalPosition;
+		}
+	}
+
+	public Vector3 idleLocalPosition {
+		get {
+			return new Vector3(0, 0, distanceFromCenter);
 		}
 	}
 
@@ -36,9 +44,9 @@ public class Hamster : MonoBehaviour {
 		}
 	}
 
-	private Attack primaryAttack;
-	private Attack secondaryAttack;
-	private Attack superAttack;
+	public Attack primaryAttack;
+	public Attack secondaryAttack;
+	public Attack superAttack;
 
 
 	void Awake() {
@@ -47,17 +55,13 @@ public class Hamster : MonoBehaviour {
 		transform.SetParent(parent, false);
 		transform.localEulerAngles = new Vector3(0, 90, 0);
 		transform.localScale = Vector3.one;
-		UpdatePosition();
+		transform.localPosition = idleLocalPosition;
 		positionOnWheel = desiredPositionOnWheel;
 
 		//Assign test attacks.
-		primaryAttack = gameObject.AddComponent<Attacks.Test>();
-		secondaryAttack = gameObject.AddComponent<Attacks.Test>();
-		superAttack = gameObject.AddComponent<Attacks.Test>();
-	}
-
-	void UpdatePosition() {
-		transform.localPosition = new Vector3(0, 0, distanceFromCenter);
+		//primaryAttack = gameObject.AddComponent<Attacks.Test>();
+		//secondaryAttack = gameObject.AddComponent<Attacks.Test>();
+		//superAttack = gameObject.AddComponent<Attacks.Test>();
 	}
 
 	void FixedUpdate() {
@@ -69,22 +73,29 @@ public class Hamster : MonoBehaviour {
 	}
 
 	public void DoPrimaryAttack(Hamster other) {
-		primaryAttack.OnAttack(other);
+		primaryAttack.DoAttack(other);
 	}
 
 	public void DoSecondaryAttack(Hamster other) {
-		secondaryAttack.OnAttack(other);
+		secondaryAttack.DoAttack(other);
 	}
 
 	public void DoSuperAttack(Hamster other) {
-		superAttack.OnAttack(other);
+		superAttack.DoAttack(other);
 	}
 
 	public void Damage(float amount, Hamster other) {
 		hp -= amount;
-		if (hp <= 0) {
-			Debug.Log("Dead");
+		if (!isDead && hp <= 0) {
+			Kill();
 		}
+	}
+
+	public void Kill() {
+		if (isDead) return;
+
+		Destroy(transform.parent.gameObject);
+		Debug.Log("Dead");
 	}
 
 }

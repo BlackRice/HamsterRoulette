@@ -2,6 +2,8 @@
 using System.Collections;
 
 public class Attack:MonoBehaviour {
+	public float damage = 25;
+
 	private Hamster _hamster;
 	public Hamster hamster {
 		get {
@@ -12,7 +14,11 @@ public class Attack:MonoBehaviour {
 		}
 	}
 
-	public virtual void OnAttack(Hamster other) {
+	public void DoAttack(Hamster other) {
+		StartCoroutine(OnAttack(other));
+	}
 
+	protected virtual IEnumerator OnAttack(Hamster other) {
+		yield break;
 	}
 }
