@@ -5,6 +5,7 @@ namespace Attacks {
 	public class MeleeAttack:Attack {
 		public float hitRadius = 0.25f;
 		public float moveSpeed = 0.3f;
+
 		public AnimationCurve attackCurve = new AnimationCurve();
 
 		protected override IEnumerator OnAttack(Hamster other) {
@@ -51,7 +52,7 @@ namespace Attacks {
 		}
 
 		protected virtual void OnDamage(Hamster other) {
-			other.Damage(damage, hamster);
+			other.Damage(GetDamage(other), hamster);
 		}
 	}
 }
