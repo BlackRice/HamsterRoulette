@@ -2,8 +2,33 @@
 using System.Collections;
 
 public class Hamster : MonoBehaviour {
-	public float hp = 100;
-	public float mp = 0;
+	[SerializeField]
+	public float _hp = 100;
+	public float hp {
+		get {
+			return _hp;
+		}
+		set {
+			_hp = Mathf.Clamp(value, 0, 100);
+		}
+	}
+
+	[SerializeField]
+	public float _mp = 100;
+	public float mp {
+		get {
+			return _mp;
+		}
+		set {
+			_mp = Mathf.Clamp(value, 0, 100);
+		}
+	}
+
+	public float hpBaseRegenRate = 1.0f;
+	public float mpBaseRegenRate = 1.0f;
+
+	public ValueModifierManager hpModifierManager { get; private set;}
+	public ValueModifierManager mpModifierManager { get; private set;}
 
 	public float desiredPositionOnWheel = 180;
 
@@ -50,6 +75,9 @@ public class Hamster : MonoBehaviour {
 
 
 	void Awake() {
+		hpModifierManager = new ValueModifierManager();
+		mpModifierManager = new ValueModifierManager();
+
 		Transform parent = new GameObject("HamsterParent").transform;
 		parent.SetParent(Wheel.current.transform, false);
 		transform.SetParent(parent, false);
@@ -57,11 +85,6 @@ public class Hamster : MonoBehaviour {
 		transform.localScale = Vector3.one;
 		transform.localPosition = idleLocalPosition;
 		positionOnWheel = desiredPositionOnWheel;
-
-		//Assign test attacks.
-		//primaryAttack = gameObject.AddComponent<Attacks.Test>();
-		//secondaryAttack = gameObject.AddComponent<Attacks.Test>();
-		//superAttack = gameObject.AddComponent<Attacks.Test>();
 	}
 
 	void FixedUpdate() {
@@ -70,6 +93,14 @@ public class Hamster : MonoBehaviour {
 		velocity -= gravityFactor*Time.fixedDeltaTime*10.0f;
 		velocity /= 1.0f+velocityDrag*Time.fixedDeltaTime;
 		positionOnWheel += velocity*Time.fixedDeltaTime;
+
+		float newHP = hp;
+		newHP += hpBaseRegenRate*hpModifierManager.value*Time.fixedDeltaTime;
+		hp = newHP;
+
+		float newMP = mp;
+		newMP += mpBaseRegenRate*mpModifierManager.value*Time.fixedDeltaTime;
+		mp = newMP;
 	}
 
 	public void DoPrimaryAttack(Hamster other) {

@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Attack:MonoBehaviour {
 	public float damage = 25;
+	public float mpCost = 10;
 
 	public float alignmentOffset = 5;
 	public float alignmentFalloff = 10;
@@ -35,6 +36,7 @@ public class Attack:MonoBehaviour {
 	}
 
 	public void DoAttack(Hamster other) {
+		hamster.mp -= mpCost;
 		StartCoroutine(OnAttack(other));
 	}
 
