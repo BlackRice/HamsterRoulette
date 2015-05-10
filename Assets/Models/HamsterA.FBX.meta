@@ -6,10 +6,21 @@ ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
     100000: //RootNode
+    100002: HamsterA_01
+    100004: HWheelA
+    100006: Line001
     400000: //RootNode
+    400002: HamsterA_01
+    400004: HWheelA
+    400006: Line001
     2300000: //RootNode
+    2300002: HamsterA_01
+    2300004: HWheelA
     3300000: //RootNode
+    3300002: HamsterA_01
+    3300004: HWheelA
     4300000: HamsterA_01
+    4300002: HWheelA
   materials:
     importMaterials: 1
     materialName: 0
@@ -48,7 +59,7 @@ ModelImporter:
     normalSmoothAngle: 60
     splitTangentsAcrossUV: 1
     normalImportMode: 0
-    tangentImportMode: 1
+    tangentImportMode: 0
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
