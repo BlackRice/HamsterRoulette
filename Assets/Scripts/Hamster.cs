@@ -2,30 +2,33 @@
 using System.Collections;
 
 public class Hamster : MonoBehaviour {
+	public float maxHP = 100;
+	public float maxMP = 100;
+	
 	[SerializeField]
-	public float _hp = 100;
+	private float _hp = 100;
 	public float hp {
 		get {
 			return _hp;
 		}
 		set {
-			_hp = Mathf.Clamp(value, 0, 100);
+			_hp = Mathf.Clamp(value, 0, maxHP);
 		}
 	}
 
 	[SerializeField]
-	public float _mp = 100;
+	private float _mp = 100;
 	public float mp {
 		get {
 			return _mp;
 		}
 		set {
-			_mp = Mathf.Clamp(value, 0, 100);
+			_mp = Mathf.Clamp(value, 0, maxMP);
 		}
 	}
 
-	public float hpBaseRegenRate = 1.0f;
-	public float mpBaseRegenRate = 1.0f;
+	public float hpBaseRegenRate = 5.0f;
+	public float mpBaseRegenRate = 10.0f;
 
 	public ValueModifierManager hpModifierManager { get; private set;}
 	public ValueModifierManager mpModifierManager { get; private set;}
