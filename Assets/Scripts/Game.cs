@@ -24,7 +24,7 @@ public class Game:MonoBehaviour {
 		}
 	}
 
-	void Start() {
+	void Awake() {
 		Application.targetFrameRate = 60;
 
 		if (playerCount < 1) {
@@ -35,7 +35,7 @@ public class Game:MonoBehaviour {
 		for (int i = 0; i < playerCount; i++) {
 			Hamster hamster = (Hamster)Instantiate(hamsterPrefab);
 			hamsters.Add(hamster);
-			hamster.distanceFromCenter = 0.37f+(float)i*0.43f;
+			hamster.distanceFromCenter = 0.5f+(float)i*0.4f;
 		}
 
 		hamsters[0].target = hamsters[1];

@@ -36,6 +36,9 @@ public class Attack:MonoBehaviour {
 	}
 
 	public void DoAttack(Hamster other) {
+		if (hamster.mp < mpCost) {
+			return;
+		}
 		hamster.mp -= mpCost;
 		StartCoroutine(OnAttack(other));
 	}
