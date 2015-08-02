@@ -7,6 +7,11 @@ public class GameUI:MonoBehaviour {
 	public CircularProgressBar hpBar;
 	public CircularProgressBar otherHPBar;
 	public CircularProgressBar mpBar;
+
+	public CircularProgressBarText hpBarText;
+	public CircularProgressBarText otherHPBarText;
+	public CircularProgressBarText mpBarText;
+
 	public RectTransform alignmentIndicatorPivot;
 	public Button primaryAttackButton;
 	public Button secondaryAttackButton;
@@ -31,7 +36,11 @@ public class GameUI:MonoBehaviour {
 		hpBar.value = playerHamster.hp/playerHamster.maxHP;
 		otherHPBar.value = otherHamster.hp/otherHamster.maxHP;
 		mpBar.value = playerHamster.mp/playerHamster.maxMP;
-		
+
+		hpBarText.text.text = playerHamster.hp.ToString("0");
+		otherHPBarText.text.text = otherHamster.hp.ToString("0");
+		mpBarText.text.text = playerHamster.mp.ToString("0");
+
 		for (int i = 0; i < Game.current.hamsters.Count; i++)
 		{
 			RectTransform alignmentIndicator = alignmentIndicators[i];
