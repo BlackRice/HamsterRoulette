@@ -4,11 +4,22 @@ using System.Collections;
 public class Attack:MonoBehaviour {
 	public float damage = 25;
 	public float mpCost = 10;
-
+	public float coolDownTime = 0;
 	public float alignmentOffset = 5;
 	public float alignmentFalloff = 10;
 
 	public float damageIncrement = 5;
+
+	public float lastAttackTime { get; private set; }
+	public float coolDown {
+		get {
+			if (coolDownTime <= 0)
+			{
+				return 1;
+			}
+			return Mathf.Clamp01((Time.timeSinceLevelLoad-lastAttackTime)/coolDownTime);
+		}
+	}
 
 	private Hamster _hamster;
 	public Hamster hamster {
@@ -18,6 +29,11 @@ public class Attack:MonoBehaviour {
 			}
 			return _hamster;
 		}
+	}
+
+	public Attack()
+	{
+		lastAttackTime = Mathf.NegativeInfinity;
 	}
 
 	public float GetAlignmentFactor(Hamster other) {
@@ -36,9 +52,10 @@ public class Attack:MonoBehaviour {
 	}
 
 	public void DoAttack(Hamster other) {
-		if (hamster.mp < mpCost) {
+		if (hamster.mp < mpCost || coolDown < 1.0f) {
 			return;
 		}
+		lastAttackTime = Time.timeSinceLevelLoad;
 		hamster.mp -= mpCost;
 		StartCoroutine(OnAttack(other));
 	}

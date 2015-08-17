@@ -27,6 +27,10 @@ public class CircularProgressBar:MaskableGraphic {
 	public float leftCapWidth = 0;
 	public float rightCapWidth = 0;
 
+	public int floorSegments = 0;
+
+	public bool tile = false;
+
 	[SerializeField]
 	[Range(0, 1)]
 	private float _value = 0;
@@ -151,7 +155,12 @@ public class CircularProgressBar:MaskableGraphic {
 	{
 		get
 		{
-			return _value;
+			float v = _value;
+			if (floorSegments > 0)
+			{
+				v = Mathf.Floor(v*floorSegments)/floorSegments;
+			}
+			return v;
 		}
 		set
 		{
@@ -203,8 +212,13 @@ public class CircularProgressBar:MaskableGraphic {
 				nextAngle = valueEndAngle;
 			}
 
-			float xUV = Mathf.Lerp(xUVStart, xUVEnd, ratio);
-			float nextXUV = Mathf.Lerp(xUVStart, xUVEnd, nextRatio);
+			float xUV = xUVStart;
+			float nextXUV = xUVEnd;
+
+			if (!tile) {
+				xUV = Mathf.Lerp(xUVStart, xUVEnd, ratio);
+				nextXUV = Mathf.Lerp(xUVStart, xUVEnd, nextRatio);
+			}
 
 			CreateSegmentQuad(vbo, angle, nextAngle, xUV, nextXUV);
 		}

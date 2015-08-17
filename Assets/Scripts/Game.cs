@@ -13,6 +13,8 @@ public class Game:MonoBehaviour {
 		}
 	}
 
+	public Color[] playerColors;
+
 	public int playerCount = 2;
 	public List<Hamster> hamsters = new List<Hamster>();
 	public Hamster playerHamster {
@@ -43,5 +45,16 @@ public class Game:MonoBehaviour {
 
 		playerHamster.gameObject.AddComponent<PlayerController>();
 		hamsters[1].gameObject.AddComponent<AIController>();
+	}
+
+	public Color GetHamsterColor(Hamster hamster)
+	{
+		Color color = Color.white;
+		int index = hamsters.IndexOf(hamster);
+		if (index != -1)
+		{
+			color = playerColors[index];
+		}
+		return color;
 	}
 }

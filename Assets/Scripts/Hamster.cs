@@ -30,6 +30,8 @@ public class Hamster : MonoBehaviour {
 	public float hpBaseRegenRate = 5.0f;
 	public float mpBaseRegenRate = 10.0f;
 
+	public RectTransform positionIndicatorPrefab;
+
 	public ValueModifierManager hpModifierManager { get; private set;}
 	public ValueModifierManager mpModifierManager { get; private set;}
 

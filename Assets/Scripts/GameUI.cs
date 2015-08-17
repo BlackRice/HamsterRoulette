@@ -13,14 +13,26 @@ public class GameUI:MonoBehaviour {
 	public CircularProgressBarText mpBarText;
 
 	public RectTransform alignmentIndicatorPivot;
+
 	public Button primaryAttackButton;
+	public Image primaryAttackFillImage;
+	public Image primaryAttackGlow;
+
 	public Button secondaryAttackButton;
-	
+	public Image secondaryAttackFillImage;
+	public Image secondaryAttackGlow;
+
 	private List<RectTransform> alignmentIndicators = new List<RectTransform>();
 	void Start() {
 		for (int i = 0; i < Game.current.hamsters.Count; i++)
 		{
-			RectTransform alignmentIndicator = Instantiate(Resources.Load<RectTransform>("UI/Alignment/Indicator"));
+			Hamster hamster = Game.current.hamsters[i];
+			RectTransform alignmentIndicator = Instantiate(hamster.positionIndicatorPrefab);
+			Image image = alignmentIndicator.gameObject.GetComponent<Image>();
+			if (image)
+			{
+				image.color = Game.current.GetHamsterColor(hamster);
+			}
 			alignmentIndicator.SetParent(alignmentIndicatorPivot, false);
 			alignmentIndicators.Add(alignmentIndicator);
 		}
@@ -47,6 +59,12 @@ public class GameUI:MonoBehaviour {
 			Hamster hamster = Game.current.hamsters[i];
 			alignmentIndicator.localEulerAngles = new Vector3(0, 0, -hamster.positionOnWheel);
 		}
+
+		primaryAttackFillImage.fillAmount = playerHamster.primaryAttack.coolDown;
+		secondaryAttackFillImage.fillAmount = playerHamster.secondaryAttack.coolDown;
+
+		primaryAttackGlow.gameObject.SetActive(playerHamster.primaryAttack.coolDown >= 1);
+		secondaryAttackGlow.gameObject.SetActive(playerHamster.secondaryAttack.coolDown >= 1);
 	}
 	
 	void OnClickPrimaryAttackButton() {
