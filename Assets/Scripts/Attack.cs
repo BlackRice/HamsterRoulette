@@ -2,6 +2,9 @@
 using System.Collections;
 
 public class Attack:MonoBehaviour {
+	public delegate void OnAttackComplete(float damageDone);
+	public event OnAttackComplete onAttackComplete;
+
 	public float damage = 25;
 	public float mpCost = 10;
 	public float coolDownTime = 0;
@@ -55,9 +58,21 @@ public class Attack:MonoBehaviour {
 		if (hamster.mp < mpCost || coolDown < 1.0f) {
 			return;
 		}
+
 		lastAttackTime = Time.timeSinceLevelLoad;
 		hamster.mp -= mpCost;
-		StartCoroutine(OnAttack(other));
+		StartCoroutine(ProxyOnAttack(other));
+	}
+
+	private IEnumerator ProxyOnAttack(Hamster other)
+	{
+		yield return StartCoroutine(OnAttack(other));
+
+		if (onAttackComplete != null)
+		{
+			float d = GetDamage(other);
+			onAttackComplete(d);
+		}
 	}
 
 	protected virtual IEnumerator OnAttack(Hamster other) {

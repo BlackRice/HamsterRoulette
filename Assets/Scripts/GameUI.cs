@@ -22,6 +22,10 @@ public class GameUI:MonoBehaviour {
 	public Image secondaryAttackFillImage;
 	public Image secondaryAttackGlow;
 
+	public Button superAttackButton;
+	public Image superAttackFillImage;
+	public Image superAttackGlow;
+
 	private List<RectTransform> alignmentIndicators = new List<RectTransform>();
 	void Start() {
 		for (int i = 0; i < Game.current.hamsters.Count; i++)
@@ -39,12 +43,13 @@ public class GameUI:MonoBehaviour {
 		
 		primaryAttackButton.onClick.AddListener(OnClickPrimaryAttackButton);
 		secondaryAttackButton.onClick.AddListener(OnClickSecondaryAttackButton);
+		superAttackButton.onClick.AddListener(OnClickSuperAttackButton);
 	}
 	
 	void Update() {
 		Hamster playerHamster = Game.current.playerHamster;
 		Hamster otherHamster = Game.current.hamsters[1];
-		
+	
 		hpBar.value = playerHamster.hp/playerHamster.maxHP;
 		otherHPBar.value = otherHamster.hp/otherHamster.maxHP;
 		mpBar.value = playerHamster.mp/playerHamster.maxMP;
@@ -62,9 +67,11 @@ public class GameUI:MonoBehaviour {
 
 		primaryAttackFillImage.fillAmount = playerHamster.primaryAttack.coolDown;
 		secondaryAttackFillImage.fillAmount = playerHamster.secondaryAttack.coolDown;
+		superAttackFillImage.fillAmount = playerHamster.superCharge;
 
 		primaryAttackGlow.gameObject.SetActive(playerHamster.primaryAttack.coolDown >= 1);
 		secondaryAttackGlow.gameObject.SetActive(playerHamster.secondaryAttack.coolDown >= 1);
+		superAttackGlow.gameObject.SetActive(playerHamster.superCharge >= 1);
 	}
 	
 	void OnClickPrimaryAttackButton() {
@@ -75,5 +82,10 @@ public class GameUI:MonoBehaviour {
 	void OnClickSecondaryAttackButton() {
 		Hamster playerHamster = Game.current.playerHamster;
 		playerHamster.DoSecondaryAttack(playerHamster.target);
+	}
+
+	void OnClickSuperAttackButton() {
+		Hamster playerHamster = Game.current.playerHamster;
+		playerHamster.DoSuperAttack(playerHamster.target);
 	}
 }

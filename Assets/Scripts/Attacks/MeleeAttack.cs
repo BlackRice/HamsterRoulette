@@ -23,7 +23,7 @@ namespace Attacks {
 				if (isHalfDone) {
 					factor = 1.0f-(factor-1.0f);
 					if (!wasHalfDone) {
-						OnDamage(other);
+						other.Damage(GetDamage(other), hamster);
 						hitPosition = hamster.transform.localPosition;
 						wasHalfDone = true;
 					}
@@ -49,10 +49,6 @@ namespace Attacks {
 				
 				yield return 0;
 			}
-		}
-
-		protected virtual void OnDamage(Hamster other) {
-			other.Damage(GetDamage(other), hamster);
 		}
 	}
 }

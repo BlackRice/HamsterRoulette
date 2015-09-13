@@ -173,9 +173,13 @@ public class CircularProgressBar:MaskableGraphic {
 		}
 	}
 
-	protected override void OnFillVBO(List<UIVertex> vbo)
+	protected override void OnPopulateMesh(Mesh m)
 	{
-		vbo.Clear();
+		base.OnPopulateMesh(m);
+
+		m.Clear();
+
+		List<UIVertex> vbo = new List<UIVertex>();
 
 		float xUVStart = 0;
 		float xUVEnd = 1;
@@ -226,6 +230,36 @@ public class CircularProgressBar:MaskableGraphic {
 		if (rightCapWidth > 0) {
 			CreateSegmentQuad(vbo, valueEndAngle, valueEndAngle-rightCapWidth, xUVEnd, 1);
 		}
+
+		Vector3[] vertices = new Vector3[vbo.Count];
+		Vector2[] uvs = new Vector2[vertices.Length];
+		//Vector3[] normals = new Vector3[vertices.Length];
+		Color32[] colors = new Color32[vertices.Length];
+		int[] triangles = new int[vertices.Length/4*2*3];
+
+		for (int i = 0; i < vertices.Length; i++) {
+			UIVertex uiv = vbo[i];
+			vertices[i] = uiv.position;
+			uvs[i] = uiv.uv0;
+			//normals[i] = uiv.normal;
+			colors[i] = uiv.color;
+		}
+
+		for (int i = 0; i < vertices.Length; i += 4) {
+			triangles[i/4*2*3+0] = i+0;
+			triangles[i/4*2*3+1] = i+1;
+			triangles[i/4*2*3+2] = i+2;
+
+			triangles[i/4*2*3+3] = i+2;
+			triangles[i/4*2*3+4] = i+3;
+			triangles[i/4*2*3+5] = i+0;
+		}
+
+		m.vertices = vertices;
+		m.uv = uvs;
+		//m.normals = normals;
+		m.colors32 = colors;
+		m.triangles = triangles;
 	}
 
 	private void CreateSegmentQuad(List<UIVertex> vertices, float angle0, float angle1, float uvX0, float uvX1) {

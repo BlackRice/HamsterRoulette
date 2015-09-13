@@ -27,6 +27,16 @@ public class Hamster : MonoBehaviour {
 		}
 	}
 
+	private float _superCharge = 0;
+	public float superCharge {
+		get {
+			return _superCharge;
+		}
+		set {
+			_superCharge = Mathf.Clamp01(value);
+		}
+	}
+
 	public float hpBaseRegenRate = 5.0f;
 	public float mpBaseRegenRate = 10.0f;
 
