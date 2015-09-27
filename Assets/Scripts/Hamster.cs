@@ -27,16 +27,6 @@ public class Hamster : MonoBehaviour {
 		}
 	}
 
-	private float _superCharge = 0;
-	public float superCharge {
-		get {
-			return _superCharge;
-		}
-		set {
-			_superCharge = Mathf.Clamp01(value);
-		}
-	}
-
 	public float hpBaseRegenRate = 5.0f;
 	public float mpBaseRegenRate = 10.0f;
 
@@ -100,6 +90,9 @@ public class Hamster : MonoBehaviour {
 		transform.localScale = Vector3.one;
 		transform.localPosition = idleLocalPosition;
 		positionOnWheel = desiredPositionOnWheel;
+
+		primaryAttack.onAttackComplete += OnNormalAttackComplete;
+		secondaryAttack.onAttackComplete += OnNormalAttackComplete;
 	}
 
 	void FixedUpdate() {
@@ -107,6 +100,7 @@ public class Hamster : MonoBehaviour {
 		gravityFactor = Mathf.PingPong(Mathf.Abs(gravityFactor), 90.0f)*Mathf.Sign(gravityFactor);
 		velocity -= gravityFactor*Time.fixedDeltaTime*10.0f;
 		velocity /= 1.0f+velocityDrag*Time.fixedDeltaTime;
+
 		positionOnWheel += velocity*Time.fixedDeltaTime;
 
 		float newHP = hp;
@@ -116,6 +110,11 @@ public class Hamster : MonoBehaviour {
 		float newMP = mp;
 		newMP += mpBaseRegenRate*mpModifierManager.value*Time.fixedDeltaTime;
 		mp = newMP;
+	}
+
+	private void OnNormalAttackComplete(float damageDone)
+	{
+		superAttack.charge += damageDone;
 	}
 
 	public void DoPrimaryAttack(Hamster other) {
@@ -140,8 +139,11 @@ public class Hamster : MonoBehaviour {
 	public void Kill() {
 		if (isDead) return;
 
-		Destroy(transform.parent.gameObject);
-		Debug.Log("Dead");
+		Game.current.OnHamsterDie(this);
 	}
 
+	void OnDestroy()
+	{
+		Destroy(transform.parent.gameObject);
+	}
 }

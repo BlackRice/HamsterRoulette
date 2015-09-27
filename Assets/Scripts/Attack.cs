@@ -8,6 +8,8 @@ public class Attack:MonoBehaviour {
 	public float damage = 25;
 	public float mpCost = 10;
 	public float coolDownTime = 0;
+	public float charge = 0;
+	public float requiredCharge = 0;
 	public float alignmentOffset = 5;
 	public float alignmentFalloff = 10;
 
@@ -21,6 +23,24 @@ public class Attack:MonoBehaviour {
 				return 1;
 			}
 			return Mathf.Clamp01((Time.timeSinceLevelLoad-lastAttackTime)/coolDownTime);
+		}
+	}
+
+	public float chargeRatio {
+		get {
+			if (requiredCharge <= 0)
+			{
+				return 1;
+			}
+			return Mathf.Clamp01(charge/requiredCharge);
+		}
+	}
+
+	public bool isUsable
+	{
+		get
+		{
+			return coolDown >= 1 && chargeRatio >= 1 && hamster.mp >= mpCost;
 		}
 	}
 
@@ -55,12 +75,13 @@ public class Attack:MonoBehaviour {
 	}
 
 	public void DoAttack(Hamster other) {
-		if (hamster.mp < mpCost || coolDown < 1.0f) {
+		if (!isUsable) {
 			return;
 		}
 
 		lastAttackTime = Time.timeSinceLevelLoad;
 		hamster.mp -= mpCost;
+		charge = 0;
 		StartCoroutine(ProxyOnAttack(other));
 	}
 

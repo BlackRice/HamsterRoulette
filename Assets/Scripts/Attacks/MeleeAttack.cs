@@ -17,6 +17,11 @@ namespace Attacks {
 			Vector3 hitPosition = Vector3.zero;
 			
 			while (Time.timeSinceLevelLoad < endTime) {
+				if (!hamster || !other)
+				{
+					break;
+				}
+
 				float factor = (Time.timeSinceLevelLoad-startTime)/totalTime;
 				bool isHalfDone = factor >= 1.0f;
 				
@@ -28,6 +33,7 @@ namespace Attacks {
 						wasHalfDone = true;
 					}
 				}
+
 				factor = Mathf.Clamp01(factor);
 				factor = attackCurve.Evaluate(factor);
 

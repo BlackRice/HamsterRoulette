@@ -13,6 +13,9 @@ public class Game:MonoBehaviour {
 		}
 	}
 
+	public GameUI gameUI;
+	public WinUI winUI;
+
 	public Color[] playerColors;
 
 	public int playerCount = 2;
@@ -28,10 +31,31 @@ public class Game:MonoBehaviour {
 
 	void Awake() {
 		Application.targetFrameRate = 60;
+		StartGame();
+	}
+
+	private void ClearUI()
+	{
+		gameUI.gameObject.SetActive(false);
+		winUI.gameObject.SetActive(false);
+	}
+
+	private void Clear()
+	{
+		foreach (var hamster in hamsters) {
+			DestroyImmediate(hamster.gameObject);
+		}
+		hamsters.Clear();
+	}
+
+	public void StartGame()
+	{
+		Clear();
 
 		if (playerCount < 1) {
 			throw new System.Exception("playerCount must be higher than 0.");
 		}
+
 		Hamster hamsterPrefab = Resources.Load<Hamster>("Hamsters/Hamster");
 
 		for (int i = 0; i < playerCount; i++) {
@@ -45,6 +69,28 @@ public class Game:MonoBehaviour {
 
 		playerHamster.gameObject.AddComponent<PlayerController>();
 		hamsters[1].gameObject.AddComponent<AIController>();
+
+		ClearUI();
+		gameUI.gameObject.SetActive(true);
+	}
+
+	public void OnHamsterDie(Hamster hamster)
+	{
+		if (hamster != playerHamster)
+		{
+			Win();
+		}
+		else
+		{
+			
+		}
+	}
+
+	private void Win()
+	{
+		ClearUI();
+
+		winUI.gameObject.SetActive(true);
 	}
 
 	public Color GetHamsterColor(Hamster hamster)

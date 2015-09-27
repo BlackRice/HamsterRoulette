@@ -27,6 +27,7 @@ public class GameUI:MonoBehaviour {
 	public Image superAttackGlow;
 
 	private List<RectTransform> alignmentIndicators = new List<RectTransform>();
+
 	void Start() {
 		for (int i = 0; i < Game.current.hamsters.Count; i++)
 		{
@@ -67,11 +68,11 @@ public class GameUI:MonoBehaviour {
 
 		primaryAttackFillImage.fillAmount = playerHamster.primaryAttack.coolDown;
 		secondaryAttackFillImage.fillAmount = playerHamster.secondaryAttack.coolDown;
-		superAttackFillImage.fillAmount = playerHamster.superCharge;
+		superAttackFillImage.fillAmount = playerHamster.superAttack.chargeRatio;
 
-		primaryAttackGlow.gameObject.SetActive(playerHamster.primaryAttack.coolDown >= 1);
-		secondaryAttackGlow.gameObject.SetActive(playerHamster.secondaryAttack.coolDown >= 1);
-		superAttackGlow.gameObject.SetActive(playerHamster.superCharge >= 1);
+		primaryAttackGlow.gameObject.SetActive(playerHamster.primaryAttack.isUsable);
+		secondaryAttackGlow.gameObject.SetActive(playerHamster.secondaryAttack.isUsable);
+		superAttackGlow.gameObject.SetActive(playerHamster.superAttack.isUsable);
 	}
 	
 	void OnClickPrimaryAttackButton() {
