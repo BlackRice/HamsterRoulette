@@ -5,6 +5,10 @@ public class PlayerController : Controller {
 
 
 	void Update() {
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			hamster.runSpeed += 10;
+		}
 		if (Input.GetKeyDown(KeyCode.Z)) {
 			hamster.DoPrimaryAttack(hamster.target);
 		}
@@ -19,8 +23,10 @@ public class PlayerController : Controller {
 	}
 
 	void FixedUpdate() {
-		float tilt = (Input.mousePosition.x/Screen.width)*2.0f-1.0f;
-		hamster.desiredPositionOnWheel = 180.0f-tilt*90;
-		hamster.desiredPositionOnWheel = Mathf.Clamp(hamster.desiredPositionOnWheel, 180-90, 180+90);
+		//Debug.Log(hamster.positionOnWheel);
+
+		//float tilt = (Input.mousePosition.x/Screen.width)*2.0f-1.0f;
+		//hamster.desiredPositionOnWheel = 180.0f-tilt*90;
+		//hamster.desiredPositionOnWheel = Mathf.Clamp(hamster.desiredPositionOnWheel, 180-90, 180+90);
 	}
 }

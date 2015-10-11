@@ -61,7 +61,12 @@ public class Game:MonoBehaviour {
 		for (int i = 0; i < playerCount; i++) {
 			Hamster hamster = (Hamster)Instantiate(hamsterPrefab);
 			hamsters.Add(hamster);
-			hamster.distanceFromCenter = 0.5f+(float)i*0.4f;
+			hamster.transform.position = Wheel.current.spinningTransform.position;
+			hamster.transform.rotation = Wheel.current.spinningTransform.rotation;
+			float offset = 0.5f+(float)i*0.4f;
+			hamster.transform.Translate(offset, 0, 0);
+			hamster.desiredDistanceFromCenter = offset;
+			//hamster.distanceFromCenter = 0.5f+(float)i*0.4f;
 		}
 
 		hamsters[0].target = hamsters[1];

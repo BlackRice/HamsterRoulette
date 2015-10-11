@@ -33,11 +33,11 @@ namespace Attacks {
 						wasHalfDone = true;
 					}
 				}
-
+				/*
 				factor = Mathf.Clamp01(factor);
 				factor = attackCurve.Evaluate(factor);
 
-				Vector3 startPosition = hamster.idleLocalPosition;
+				Vector3 startPosition = hamster.transform.position;
 				Vector3 endPosition = Vector3.zero;
 				
 				if (isHalfDone) {
@@ -52,7 +52,7 @@ namespace Attacks {
 				Vector3 localPosition = Vector3.Lerp(startPosition, endPosition, factor);
 				
 				hamster.transform.localPosition = localPosition;
-				
+				*/
 				yield return 0;
 			}
 		}

@@ -60,12 +60,15 @@ public class Attack:MonoBehaviour {
 	}
 
 	public float GetAlignmentFactor(Hamster other) {
+		return 1;
+		/*
 		float alignmentFactor = Mathf.Abs(Mathf.DeltaAngle(hamster.positionOnWheel, other.positionOnWheel));
 		alignmentFactor -= alignmentOffset;
 		alignmentFactor /= alignmentFalloff;
 		alignmentFactor = 1.0f-Mathf.Clamp01(alignmentFactor);
 
 		return alignmentFactor;
+		*/
 	}
 
 	public float GetDamage(Hamster other) {

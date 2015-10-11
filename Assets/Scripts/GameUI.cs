@@ -63,7 +63,7 @@ public class GameUI:MonoBehaviour {
 		{
 			RectTransform alignmentIndicator = alignmentIndicators[i];
 			Hamster hamster = Game.current.hamsters[i];
-			alignmentIndicator.localEulerAngles = new Vector3(0, 0, -hamster.positionOnWheel);
+			//alignmentIndicator.localEulerAngles = new Vector3(0, 0, -hamster.positionOnWheel);
 		}
 
 		primaryAttackFillImage.fillAmount = playerHamster.primaryAttack.coolDown;
