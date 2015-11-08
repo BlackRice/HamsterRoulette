@@ -173,13 +173,13 @@ public class CircularProgressBar:MaskableGraphic {
 		}
 	}
 
-	protected override void OnPopulateMesh(Mesh m)
+	protected override void OnPopulateMesh(VertexHelper vh)
 	{
-		base.OnPopulateMesh(m);
+		base.OnPopulateMesh(vh);
 
-		m.Clear();
+		vh.Clear();
 
-		List<UIVertex> vbo = new List<UIVertex>();
+		//List<UIVertex> vbo = new List<UIVertex>();
 
 		float xUVStart = 0;
 		float xUVEnd = 1;
@@ -202,7 +202,7 @@ public class CircularProgressBar:MaskableGraphic {
 		float segmentLength = rangeLength/segments;
 
 		if (leftCapWidth > 0) {
-			CreateSegmentQuad(vbo, startAngle+leftCapWidth, startAngle, 0, xUVStart);
+			CreateSegmentQuad(vh, startAngle+leftCapWidth, startAngle, 0, xUVStart);
 		}
 
 		for (int i = 0; i < actualSegments; i++) {
@@ -224,69 +224,44 @@ public class CircularProgressBar:MaskableGraphic {
 				nextXUV = Mathf.Lerp(xUVStart, xUVEnd, nextRatio);
 			}
 
-			CreateSegmentQuad(vbo, angle, nextAngle, xUV, nextXUV);
+			CreateSegmentQuad(vh, angle, nextAngle, xUV, nextXUV);
 		}
 
 		if (rightCapWidth > 0) {
-			CreateSegmentQuad(vbo, valueEndAngle, valueEndAngle-rightCapWidth, xUVEnd, 1);
+			CreateSegmentQuad(vh, valueEndAngle, valueEndAngle-rightCapWidth, xUVEnd, 1);
 		}
-
-		Vector3[] vertices = new Vector3[vbo.Count];
-		Vector2[] uvs = new Vector2[vertices.Length];
-		//Vector3[] normals = new Vector3[vertices.Length];
-		Color32[] colors = new Color32[vertices.Length];
-		int[] triangles = new int[vertices.Length/4*2*3];
-
-		for (int i = 0; i < vertices.Length; i++) {
-			UIVertex uiv = vbo[i];
-			vertices[i] = uiv.position;
-			uvs[i] = uiv.uv0;
-			//normals[i] = uiv.normal;
-			colors[i] = uiv.color;
-		}
-
-		for (int i = 0; i < vertices.Length; i += 4) {
-			triangles[i/4*2*3+0] = i+0;
-			triangles[i/4*2*3+1] = i+1;
-			triangles[i/4*2*3+2] = i+2;
-
-			triangles[i/4*2*3+3] = i+2;
-			triangles[i/4*2*3+4] = i+3;
-			triangles[i/4*2*3+5] = i+0;
-		}
-
-		m.vertices = vertices;
-		m.uv = uvs;
-		//m.normals = normals;
-		m.colors32 = colors;
-		m.triangles = triangles;
 	}
 
-	private void CreateSegmentQuad(List<UIVertex> vertices, float angle0, float angle1, float uvX0, float uvX1) {
+	private void CreateSegmentQuad(VertexHelper vh, float angle0, float angle1, float uvX0, float uvX1) {
 		Vector2 direction = AngleToDirection(angle0);
 		Vector2 nextDirection = AngleToDirection(angle1);
 
 		UIVertex vert = UIVertex.simpleVert;
 
+		int startVertexIndex = vh.currentVertCount;
+
 		vert.position = direction*innerRadius;
 		vert.uv0 = new Vector2(uvX0, 0);
 		vert.color = color;
-		vertices.Add(vert);
+		vh.AddVert(vert);
 
 		vert.position = direction*outerRadius;
 		vert.uv0 = new Vector2(uvX0, 1);
 		vert.color = color;
-		vertices.Add(vert);
+		vh.AddVert(vert);
 
 		vert.position = nextDirection*outerRadius;
 		vert.uv0 = new Vector2(uvX1, 1);
 		vert.color = color;
-		vertices.Add(vert);
+		vh.AddVert(vert);
 
 		vert.position = nextDirection*innerRadius;
 		vert.uv0 = new Vector2(uvX1, 0);
 		vert.color = color;
-		vertices.Add(vert);
+		vh.AddVert(vert);
+
+		vh.AddTriangle(startVertexIndex+0, startVertexIndex+1, startVertexIndex+2);
+		vh.AddTriangle(startVertexIndex+2, startVertexIndex+3, startVertexIndex+0);
 	}
 
 	private Vector2 AngleToDirection(float angle) {

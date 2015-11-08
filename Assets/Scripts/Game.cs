@@ -63,9 +63,9 @@ public class Game:MonoBehaviour {
 			hamsters.Add(hamster);
 			hamster.transform.position = Wheel.current.spinningTransform.position;
 			hamster.transform.rotation = Wheel.current.spinningTransform.rotation;
-			float offset = 0.5f+(float)i*0.4f;
-			hamster.transform.Translate(offset, 0, 0);
-			hamster.desiredDistanceFromCenter = offset;
+			//float offset = 0.5f+(float)i*0.4f;
+			//hamster.transform.Translate(offset, 0, 0);
+			//hamster.desiredDistanceFromCenter = offset;
 			//hamster.distanceFromCenter = 0.5f+(float)i*0.4f;
 		}
 

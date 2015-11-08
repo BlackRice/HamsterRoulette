@@ -30,6 +30,9 @@ public class Hamster : MonoBehaviour {
 	public float hpBaseRegenRate = 5.0f;
 	public float mpBaseRegenRate = 10.0f;
 
+	public float minDistanceFromCenter = 0.2f;
+	public float maxDistanceFromCenter = 0.8f;
+
 	public RectTransform positionIndicatorPrefab;
 
 	public ValueModifierManager hpModifierManager { get; private set;}
@@ -39,12 +42,28 @@ public class Hamster : MonoBehaviour {
 
 	public float runSpeed = 0;
 	public float runSpeedDrag = 1.0f;
+	public float centeringForce = 200;
+	public float centeringProjection = 0.05f;
+
+	public float collisionRadius = 1;
 
 	public Hamster target;
 
 	public bool isDead {get; private set;}
 
-	public float desiredDistanceFromCenter = 0.5f;
+	[SerializeField]
+	private float _desiredDistanceFromCenter = 0.5f;
+	public float desiredDistanceFromCenter
+	{
+		get
+		{
+			return _desiredDistanceFromCenter;
+		}
+		set
+		{
+			_desiredDistanceFromCenter = Mathf.Clamp(value, minDistanceFromCenter, maxDistanceFromCenter);
+		}
+	}
 
 	private Rigidbody _rigidbody;
 	new public Rigidbody rigidbody
@@ -134,12 +153,13 @@ public class Hamster : MonoBehaviour {
 			transform.LookAt(transform.position+pointVelocity, Wheel.current.spinningTransform.up);
 		}
 
-		Vector3 positionDif = transform.position-Wheel.current.spinningTransform.position;
-		float distance = positionDif.magnitude;
-		Vector2 directionFromWheelCenter = positionDif.normalized;
+		Vector3 projectedPosition = transform.position+rigidbody.velocity*centeringProjection;
+		Vector3 projectedPositionDif = projectedPosition-Wheel.current.spinningTransform.position;
+		float projectedDistance = projectedPositionDif.magnitude;
+		Vector3 projectedDirectionFromWheelCenter = projectedPositionDif.normalized;
 
-		Vector3 centerForce = directionFromWheelCenter*(desiredDistanceFromCenter-distance);
-		rigidbody.AddForce(centerForce*200);
+		Vector3 centerForce = projectedDirectionFromWheelCenter*(desiredDistanceFromCenter-projectedDistance);
+		rigidbody.AddForce(centerForce*centeringForce, ForceMode.Acceleration);
 
 		Vector3 floorPosition = GetFloorPosition();
 		Vector3 newPosition = floorPosition;
@@ -147,9 +167,18 @@ public class Hamster : MonoBehaviour {
 
 		Vector3 runningVelocity = rigidbody.velocity+transform.forward*runSpeed;
 		Vector3 velocityTransfer = runningVelocity-pointVelocity;
-		wheelRB.AddForceAtPosition(velocityTransfer*0.5f, transform.position);
-		rigidbody.AddForce(-velocityTransfer*0.5f);
-		//Debug.Log(rigidbody.velocity+" "+pointVelocity);
+		float hamsterWheelMassRatio = rigidbody.mass/wheelRB.mass;
+		wheelRB.AddForceAtPosition(velocityTransfer*0.5f*hamsterWheelMassRatio, transform.position, ForceMode.Acceleration);
+		rigidbody.AddForce(-velocityTransfer*0.5f/hamsterWheelMassRatio, ForceMode.Acceleration);
+
+		foreach (var otherHamster in Game.current.hamsters) {
+			if (otherHamster == this)
+			{
+				continue;
+			}
+
+			ApplyHamsterCollision(otherHamster);
+		}
 
 		Vector3 vel = rigidbody.velocity;
 		//vel = pointVelocity;
@@ -167,6 +196,24 @@ public class Hamster : MonoBehaviour {
 		float newMP = mp;
 		newMP += mpBaseRegenRate*mpModifierManager.value*Time.fixedDeltaTime;
 		mp = newMP;
+	}
+
+	void ApplyHamsterCollision(Hamster otherHamster)
+	{
+		Vector3 positionDif = otherHamster.transform.position-transform.position;
+		float distance = positionDif.magnitude;
+		Vector3 direction = positionDif.normalized;
+
+		float overlap = 1.0f-Mathf.Clamp01(distance/(collisionRadius+otherHamster.collisionRadius));
+
+		if (overlap <= 0)
+		{
+			return;
+		}
+
+		Vector3 force = direction*overlap*10;
+		rigidbody.AddForce(-force*otherHamster.rigidbody.mass);
+		otherHamster.rigidbody.AddForce(force*rigidbody.mass);
 	}
 
 	Vector3 GetFloorPosition()

@@ -5,10 +5,6 @@ public class PlayerController : Controller {
 
 
 	void Update() {
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			hamster.runSpeed += 10;
-		}
 		if (Input.GetKeyDown(KeyCode.Z)) {
 			hamster.DoPrimaryAttack(hamster.target);
 		}
@@ -20,13 +16,14 @@ public class PlayerController : Controller {
 		if (Input.GetKeyDown(KeyCode.C)) {
 			hamster.DoSuperAttack(hamster.target);
 		}
-	}
 
-	void FixedUpdate() {
-		//Debug.Log(hamster.positionOnWheel);
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			hamster.runSpeed += 5;
+		}
 
-		//float tilt = (Input.mousePosition.x/Screen.width)*2.0f-1.0f;
-		//hamster.desiredPositionOnWheel = 180.0f-tilt*90;
-		//hamster.desiredPositionOnWheel = Mathf.Clamp(hamster.desiredPositionOnWheel, 180-90, 180+90);
+		//TODO: use actual tilt input.
+		float tilt = 1.0f-(Input.mousePosition.y/Screen.height);
+		hamster.desiredDistanceFromCenter = tilt;
 	}
 }
