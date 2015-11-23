@@ -10,8 +10,7 @@ public class Attack:MonoBehaviour {
 	public float coolDownTime = 0;
 	public float charge = 0;
 	public float requiredCharge = 0;
-	public float alignmentOffset = 5;
-	public float alignmentFalloff = 10;
+	public float maxRadiusFalloff = 0;
 
 	public float damageIncrement = 5;
 
@@ -59,20 +58,25 @@ public class Attack:MonoBehaviour {
 		lastAttackTime = Mathf.NegativeInfinity;
 	}
 
-	public float GetAlignmentFactor(Hamster other) {
-		return 1;
-		/*
-		float alignmentFactor = Mathf.Abs(Mathf.DeltaAngle(hamster.positionOnWheel, other.positionOnWheel));
-		alignmentFactor -= alignmentOffset;
-		alignmentFactor /= alignmentFalloff;
-		alignmentFactor = 1.0f-Mathf.Clamp01(alignmentFactor);
+	public float GetDamageModifier(Hamster other)
+	{
+		float damageModifier = 1;
 
-		return alignmentFactor;
-		*/
+		if (maxRadiusFalloff > 0) {
+			float distance = Vector3.Distance(transform.position, other.transform.position);
+
+			//Subtract both collision radiuses so it uses the distance between collision spheres.
+			distance -= hamster.collisionRadius+other.collisionRadius;
+			distance = Mathf.Max(distance, 0);
+
+			float ratio = 1.0f-Mathf.Clamp01(distance/maxRadiusFalloff);
+			damageModifier = ratio;
+		}
+		return damageModifier;
 	}
 
 	public float GetDamage(Hamster other) {
-		float actualDamage = damage*GetAlignmentFactor(other);
+		float actualDamage = damage*GetDamageModifier(other);
 		actualDamage = Mathf.Round(actualDamage/damageIncrement)*damageIncrement;
 		return actualDamage;
 	}

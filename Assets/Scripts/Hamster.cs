@@ -65,6 +65,16 @@ public class Hamster : MonoBehaviour {
 		}
 	}
 
+	public float angleOnWheel
+	{
+		get
+		{
+			Vector3 localPosition = Wheel.current.transform.InverseTransformPoint(transform.position);
+			localPosition.y = 0;
+			return Quaternion.LookRotation(localPosition).eulerAngles.y;
+		}
+	}
+
 	private Rigidbody _rigidbody;
 	new public Rigidbody rigidbody
 	{
@@ -147,10 +157,12 @@ public class Hamster : MonoBehaviour {
 
 		Rigidbody wheelRB = Wheel.current.spinningTransform.GetComponent<Rigidbody>();
 		Vector3 pointVelocity = wheelRB.GetPointVelocity(transform.position);
+		Vector3 directionFromWheel = (transform.position-Wheel.current.transform.position).normalized;
 
 		if (pointVelocity.magnitude > Vector3.kEpsilon)
 		{
-			transform.LookAt(transform.position+pointVelocity, Wheel.current.spinningTransform.up);
+			Vector3 forward = Vector3.Cross(Wheel.current.transform.up, directionFromWheel);
+			transform.LookAt(transform.position+forward, Wheel.current.spinningTransform.up);
 		}
 
 		Vector3 projectedPosition = transform.position+rigidbody.velocity*centeringProjection;

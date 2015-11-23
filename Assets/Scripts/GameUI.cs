@@ -59,13 +59,6 @@ public class GameUI:MonoBehaviour {
 		otherHPBarText.text.text = otherHamster.hp.ToString("0");
 		mpBarText.text.text = playerHamster.mp.ToString("0");
 
-		for (int i = 0; i < Game.current.hamsters.Count; i++)
-		{
-			RectTransform alignmentIndicator = alignmentIndicators[i];
-			Hamster hamster = Game.current.hamsters[i];
-			//alignmentIndicator.localEulerAngles = new Vector3(0, 0, -hamster.positionOnWheel);
-		}
-
 		primaryAttackFillImage.fillAmount = playerHamster.primaryAttack.coolDown;
 		secondaryAttackFillImage.fillAmount = playerHamster.secondaryAttack.coolDown;
 		superAttackFillImage.fillAmount = playerHamster.superAttack.chargeRatio;
