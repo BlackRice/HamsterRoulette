@@ -4,7 +4,9 @@ using System.Collections;
 public class Hamster : MonoBehaviour {
 	public float maxHP = 100;
 	public float maxMP = 100;
-	
+
+	public DamageIndicator damageIndicatorTemplate;
+
 	[SerializeField]
 	private float _hp = 100;
 	public float hp {
@@ -38,8 +40,6 @@ public class Hamster : MonoBehaviour {
 	public ValueModifierManager hpModifierManager { get; private set;}
 	public ValueModifierManager mpModifierManager { get; private set;}
 
-	//public float desiredPositionOnWheel = 180;
-
 	public float runSpeed = 0;
 	public float runSpeedDrag = 1.0f;
 	public float centeringForce = 200;
@@ -69,9 +69,17 @@ public class Hamster : MonoBehaviour {
 	{
 		get
 		{
-			Vector3 localPosition = Wheel.current.transform.InverseTransformPoint(transform.position);
-			localPosition.y = 0;
-			return Quaternion.LookRotation(localPosition).eulerAngles.y;
+			return CalculateAngleOnWheel(transform.position);
+		}
+	}
+
+	public float angularVelocityOnWheel
+	{
+		get
+		{
+			float angle = angleOnWheel;
+			float projectedAngle = CalculateAngleOnWheel(transform.position+rigidbody.velocity);
+			return Mathf.DeltaAngle(angle, projectedAngle);
 		}
 	}
 
@@ -87,37 +95,25 @@ public class Hamster : MonoBehaviour {
 			return _rigidbody;
 		}
 	}
-	/*
-	[SerializeField] //Hao - why necessary ?
-	private float _distanceFromCenter = 1;
-	public float distanceFromCenter {
-		get {
-			return _distanceFromCenter;
+
+	private int _runDirection = 1;
+	public int runDirection
+	{
+		get
+		{
+			return _runDirection;
 		}
-		set {
-			_distanceFromCenter = value;
-			transform.localPosition = idleLocalPosition;
+		set
+		{
+			int previous = _runDirection;
+			_runDirection = (int)Mathf.Sign(value);
+			if (previous != _runDirection)
+			{
+				runSpeed = 0;
+			}
 		}
 	}
 
-	public Vector3 idleLocalPosition {
-		get {
-			return new Vector3(0, 0, distanceFromCenter);
-		}
-	}
-
-	public float positionOnWheel {
-		get {
-			return transform.parent.localEulerAngles.y;
-		}
-		set {
-			value = Mathf.Repeat(value, 360);
-			Vector3 angles = transform.parent.localEulerAngles;
-			angles.y = value;
-			transform.parent.localEulerAngles = angles;
-		}
-	}
-	*/
 	public Attack primaryAttack;
 	public Attack secondaryAttack;
 	public Attack superAttack;
@@ -127,41 +123,18 @@ public class Hamster : MonoBehaviour {
 		hpModifierManager = new ValueModifierManager();
 		mpModifierManager = new ValueModifierManager();
 
-		//Transform parent = new GameObject("HamsterParent").transform;
-		//parent.SetParent(Wheel.current.transform, false);
-		//transform.SetParent(parent, false);
-		//transform.localEulerAngles = new Vector3(0, 90, 0);
-		//transform.localScale = Vector3.one;
-		//transform.localPosition = idleLocalPosition;
-		//positionOnWheel = desiredPositionOnWheel;
-
-
 		primaryAttack.onAttackComplete += OnNormalAttackComplete;
 		secondaryAttack.onAttackComplete += OnNormalAttackComplete;
 	}
 
 	void FixedUpdate() {
-		/*
-		float gravityFactor = positionOnWheel-desiredPositionOnWheel;
-		gravityFactor = Mathf.PingPong(Mathf.Abs(gravityFactor), 90.0f)*Mathf.Sign(gravityFactor);
-		velocity -= gravityFactor*Time.fixedDeltaTime*10.0f;
-		velocity /= 1.0f+velocityDrag*Time.fixedDeltaTime;
-
-		positionOnWheel += velocity*Time.fixedDeltaTime;
-		*/
-
-		//Vector3 forward = transform.position;//Wheel.current.transform.InverseTransformPoint();
-		//Quaternion.AngleAxis(1, Wheel.current.spinningTransform.up);
-		//forward = (forward-transform.position).normalized;
-		//transform.LookAt(transform.position+forward, Wheel.current.spinningTransform.up);
-
 		Rigidbody wheelRB = Wheel.current.spinningTransform.GetComponent<Rigidbody>();
 		Vector3 pointVelocity = wheelRB.GetPointVelocity(transform.position);
 		Vector3 directionFromWheel = (transform.position-Wheel.current.transform.position).normalized;
 
 		if (pointVelocity.magnitude > Vector3.kEpsilon)
 		{
-			Vector3 forward = Vector3.Cross(Wheel.current.transform.up, directionFromWheel);
+			Vector3 forward = Vector3.Cross(Wheel.current.transform.up, directionFromWheel)*runDirection;
 			transform.LookAt(transform.position+forward, Wheel.current.spinningTransform.up);
 		}
 
@@ -201,13 +174,16 @@ public class Hamster : MonoBehaviour {
 
 		runSpeed /= 1.0f+runSpeedDrag*Time.fixedDeltaTime;
 
-		float newHP = hp;
-		newHP += hpBaseRegenRate*hpModifierManager.value*Time.fixedDeltaTime;
-		hp = newHP;
+		if (!isDead)
+		{
+			float newHP = hp;
+			newHP += hpBaseRegenRate*hpModifierManager.value*Time.fixedDeltaTime;
+			hp = newHP;
 
-		float newMP = mp;
-		newMP += mpBaseRegenRate*mpModifierManager.value*Time.fixedDeltaTime;
-		mp = newMP;
+			float newMP = mp;
+			newMP += mpBaseRegenRate*mpModifierManager.value*Time.fixedDeltaTime;
+			mp = newMP;
+		}
 	}
 
 	void ApplyHamsterCollision(Hamster otherHamster)
@@ -241,6 +217,17 @@ public class Hamster : MonoBehaviour {
 		return ray.origin;
 	}
 
+	static private float CalculateAngleOnWheel(Vector3 position)
+	{
+		Vector3 localPosition = Wheel.current.transform.InverseTransformPoint(position);
+		localPosition.y = 0;
+		if (localPosition == Vector3.zero)
+		{
+			return 0;
+		}
+		return Quaternion.LookRotation(localPosition).eulerAngles.y;
+	}
+
 	private void OnNormalAttackComplete(float damageDone)
 	{
 		superAttack.charge += damageDone;
@@ -260,6 +247,13 @@ public class Hamster : MonoBehaviour {
 
 	public void Damage(float amount, Hamster other) {
 		hp -= amount;
+
+		if (damageIndicatorTemplate)
+		{
+			DamageIndicator damageIndicator = (DamageIndicator)Instantiate(damageIndicatorTemplate, transform.position+new Vector3(0, 0.35f, 0), Quaternion.identity);
+			damageIndicator.damage = Mathf.RoundToInt(amount);
+		}
+
 		if (!isDead && hp <= 0) {
 			Kill();
 		}
@@ -267,12 +261,7 @@ public class Hamster : MonoBehaviour {
 
 	public void Kill() {
 		if (isDead) return;
-
+		isDead = true;
 		Game.current.OnHamsterDie(this);
-	}
-
-	void OnDestroy()
-	{
-		//Destroy(transform.parent.gameObject);
 	}
 }

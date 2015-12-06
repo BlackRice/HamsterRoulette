@@ -15,6 +15,7 @@ public class Game:MonoBehaviour {
 
 	public GameUI gameUI;
 	public WinUI winUI;
+	public LoseUI loseUI;
 
 	public Color[] playerColors;
 
@@ -36,8 +37,8 @@ public class Game:MonoBehaviour {
 
 	private void ClearUI()
 	{
-		gameUI.gameObject.SetActive(false);
 		winUI.gameObject.SetActive(false);
+		loseUI.gameObject.SetActive(false);
 	}
 
 	private void Clear()
@@ -76,7 +77,6 @@ public class Game:MonoBehaviour {
 		hamsters[1].gameObject.AddComponent<AIController>();
 
 		ClearUI();
-		gameUI.gameObject.SetActive(true);
 	}
 
 	public void OnHamsterDie(Hamster hamster)
@@ -87,7 +87,7 @@ public class Game:MonoBehaviour {
 		}
 		else
 		{
-			
+			Lose();
 		}
 	}
 
@@ -96,6 +96,13 @@ public class Game:MonoBehaviour {
 		ClearUI();
 
 		winUI.gameObject.SetActive(true);
+	}
+
+	private void Lose()
+	{
+		ClearUI();
+
+		loseUI.gameObject.SetActive(true);
 	}
 
 	public Color GetHamsterColor(Hamster hamster)

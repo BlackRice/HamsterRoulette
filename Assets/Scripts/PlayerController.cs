@@ -2,9 +2,12 @@
 using System.Collections;
 
 public class PlayerController : Controller {
-
-
 	void Update() {
+		if (hamster.isDead)
+		{
+			return;
+		}
+
 		if (Input.GetKeyDown(KeyCode.Z)) {
 			hamster.DoPrimaryAttack(hamster.target);
 		}
@@ -17,8 +20,15 @@ public class PlayerController : Controller {
 			hamster.DoSuperAttack(hamster.target);
 		}
 
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.LeftArrow))
 		{
+			hamster.runDirection = -1;
+			hamster.runSpeed += 5;
+		}
+
+		if (Input.GetKeyDown(KeyCode.RightArrow))
+		{
+			hamster.runDirection = 1;
 			hamster.runSpeed += 5;
 		}
 

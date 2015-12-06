@@ -13,6 +13,11 @@ public class AIController : Controller {
 	private float lastTacticUpdateTime = Mathf.NegativeInfinity;
 
 	void FixedUpdate() {
+		if (hamster.isDead)
+		{
+			return;
+		}
+
 		if (Time.timeSinceLevelLoad-lastTacticUpdateTime > 3)
 		{
 			UpdateTactic();
@@ -21,8 +26,6 @@ public class AIController : Controller {
 		ProcessMovement();
 
 		ProcessAttacking();
-
-		//hamster.desiredPositionOnWheel = hamster.target.positionOnWheel+hamster.target.velocity*Time.fixedDeltaTime;
 	}
 
 	void UpdateTactic()

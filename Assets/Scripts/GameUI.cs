@@ -50,7 +50,7 @@ public class GameUI:MonoBehaviour {
 	void Update() {
 		Hamster playerHamster = Game.current.playerHamster;
 		Hamster otherHamster = Game.current.hamsters[1];
-	
+
 		hpBar.value = playerHamster.hp/playerHamster.maxHP;
 		otherHPBar.value = otherHamster.hp/otherHamster.maxHP;
 		mpBar.value = playerHamster.mp/playerHamster.maxMP;
