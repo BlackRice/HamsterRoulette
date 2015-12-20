@@ -49,14 +49,24 @@ public class GameUI:MonoBehaviour {
 	
 	void Update() {
 		Hamster playerHamster = Game.current.playerHamster;
-		Hamster otherHamster = Game.current.hamsters[1];
+		Hamster otherHamster = null;
+		if (Game.current.hamsters.Count > 1)
+		{
+			otherHamster = Game.current.hamsters[1];
+		}
 
 		hpBar.value = playerHamster.hp/playerHamster.maxHP;
-		otherHPBar.value = otherHamster.hp/otherHamster.maxHP;
+		if (otherHamster)
+		{
+			otherHPBar.value = otherHamster.hp/otherHamster.maxHP;
+		}
 		mpBar.value = playerHamster.mp/playerHamster.maxMP;
 
 		hpBarText.text.text = playerHamster.hp.ToString("0");
-		otherHPBarText.text.text = otherHamster.hp.ToString("0");
+		if (otherHamster)
+		{
+			otherHPBarText.text.text = otherHamster.hp.ToString("0");
+		}
 		mpBarText.text.text = playerHamster.mp.ToString("0");
 
 		primaryAttackFillImage.fillAmount = playerHamster.primaryAttack.coolDown;

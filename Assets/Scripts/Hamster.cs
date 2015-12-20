@@ -153,8 +153,10 @@ public class Hamster : MonoBehaviour {
 		Vector3 runningVelocity = rigidbody.velocity+transform.forward*runSpeed;
 		Vector3 velocityTransfer = runningVelocity-pointVelocity;
 		float hamsterWheelMassRatio = rigidbody.mass/wheelRB.mass;
-		wheelRB.AddForceAtPosition(velocityTransfer*0.5f*hamsterWheelMassRatio, transform.position, ForceMode.Acceleration);
-		rigidbody.AddForce(-velocityTransfer*0.5f/hamsterWheelMassRatio, ForceMode.Acceleration);
+		//wheelRB.AddForceAtPosition(velocityTransfer*0.5f*hamsterWheelMassRatio, transform.position, ForceMode.VelocityChange);
+		//rigidbody.AddForce(-velocityTransfer*0.5f/hamsterWheelMassRatio, ForceMode.VelocityChange);
+		wheelRB.AddForceAtPosition(velocityTransfer*5.0f*hamsterWheelMassRatio, transform.position, ForceMode.Acceleration);
+		rigidbody.AddForce(-velocityTransfer*5.0f/hamsterWheelMassRatio, ForceMode.Acceleration);
 
 		foreach (var otherHamster in Game.current.hamsters) {
 			if (otherHamster == this)

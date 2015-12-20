@@ -23,17 +23,27 @@ public class PlayerController : Controller {
 		if (Input.GetKeyDown(KeyCode.LeftArrow))
 		{
 			hamster.runDirection = -1;
-			hamster.runSpeed += 5;
+			hamster.runSpeed += 1;
 		}
 
 		if (Input.GetKeyDown(KeyCode.RightArrow))
 		{
 			hamster.runDirection = 1;
-			hamster.runSpeed += 5;
+			hamster.runSpeed += 1;
+		}
+
+		if (Input.GetKey(KeyCode.UpArrow))
+		{
+			hamster.desiredDistanceFromCenter -= 1.0f*Time.deltaTime;
+		}
+
+		if (Input.GetKey(KeyCode.DownArrow))
+		{
+			hamster.desiredDistanceFromCenter += 1.0f*Time.deltaTime;
 		}
 
 		//TODO: use actual tilt input.
-		float tilt = 1.0f-(Input.mousePosition.y/Screen.height);
-		hamster.desiredDistanceFromCenter = tilt;
+		//float tilt = 1.0f-(Input.mousePosition.y/Screen.height);
+		//hamster.desiredDistanceFromCenter = tilt;
 	}
 }
