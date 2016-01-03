@@ -2,6 +2,15 @@
 using System.Collections;
 
 public class Hamster : MonoBehaviour {
+	public class SpinningStateInfo
+	{
+		public float angleOnWheel;
+		public SpinningStateInfo(Hamster hamster)
+		{
+			angleOnWheel = Hamster.CalculateAngle(Wheel.current.spinningTransform, hamster.transform.position);
+		}
+	}
+
 	public float maxHP = 100;
 	public float maxMP = 100;
 
@@ -69,7 +78,7 @@ public class Hamster : MonoBehaviour {
 	{
 		get
 		{
-			return CalculateAngleOnWheel(transform.position);
+			return CalculateAngle(Wheel.current.transform, transform.position);
 		}
 	}
 
@@ -78,7 +87,7 @@ public class Hamster : MonoBehaviour {
 		get
 		{
 			float angle = angleOnWheel;
-			float projectedAngle = CalculateAngleOnWheel(transform.position+rigidbody.velocity);
+			float projectedAngle = CalculateAngle(Wheel.current.transform, transform.position+rigidbody.velocity);
 			return Mathf.DeltaAngle(angle, projectedAngle);
 		}
 	}
@@ -114,10 +123,34 @@ public class Hamster : MonoBehaviour {
 		}
 	}
 
+	public Vector3 forwardDirection
+	{
+		get
+		{
+			Vector3 directionFromWheel = (transform.position-Wheel.current.transform.position).normalized;
+			Vector3 forward = Vector3.Cross(Wheel.current.transform.up, directionFromWheel)*runDirection;
+			return forward;
+		}
+	}
+
 	public Attack primaryAttack;
 	public Attack secondaryAttack;
 	public Attack superAttack;
 
+	public SpinningStateInfo spinningStateInfo {get; private set; }
+
+	public void StartSpinning()
+	{
+		spinningStateInfo = new SpinningStateInfo(this);
+		rigidbody.velocity = Vector3.zero;
+		rigidbody.isKinematic = true;
+	}
+
+	public void EndSpinning()
+	{
+		spinningStateInfo = null;
+		rigidbody.isKinematic = false;
+	}
 
 	void Awake() {
 		hpModifierManager = new ValueModifierManager();
@@ -127,15 +160,32 @@ public class Hamster : MonoBehaviour {
 		secondaryAttack.onAttackComplete += OnNormalAttackComplete;
 	}
 
-	void FixedUpdate() {
+	void FixedUpdate()
+	{
+		if (spinningStateInfo != null)
+		{
+			SpinningStateUpdate();
+		}
+		else
+		{
+			RunningStateUpdate();
+		}
+	}
+
+	void SpinningStateUpdate()
+	{
+		Vector3 localSpinningPosition = Quaternion.Euler(0, spinningStateInfo.angleOnWheel, 0)*Vector3.forward*maxDistanceFromCenter;
+		transform.position = Wheel.current.spinningTransform.TransformPoint(localSpinningPosition);
+		transform.LookAt(transform.position+forwardDirection, Wheel.current.spinningTransform.up);
+	}
+
+	void RunningStateUpdate() {
 		Rigidbody wheelRB = Wheel.current.spinningTransform.GetComponent<Rigidbody>();
 		Vector3 pointVelocity = wheelRB.GetPointVelocity(transform.position);
-		Vector3 directionFromWheel = (transform.position-Wheel.current.transform.position).normalized;
 
 		if (pointVelocity.magnitude > Vector3.kEpsilon)
 		{
-			Vector3 forward = Vector3.Cross(Wheel.current.transform.up, directionFromWheel)*runDirection;
-			transform.LookAt(transform.position+forward, Wheel.current.spinningTransform.up);
+			transform.LookAt(transform.position+forwardDirection, Wheel.current.spinningTransform.up);
 		}
 
 		Vector3 projectedPosition = transform.position+rigidbody.velocity*centeringProjection;
@@ -219,9 +269,9 @@ public class Hamster : MonoBehaviour {
 		return ray.origin;
 	}
 
-	static private float CalculateAngleOnWheel(Vector3 position)
+	static private float CalculateAngle(Transform t, Vector3 position)
 	{
-		Vector3 localPosition = Wheel.current.transform.InverseTransformPoint(position);
+		Vector3 localPosition = t.InverseTransformPoint(position);
 		localPosition.y = 0;
 		if (localPosition == Vector3.zero)
 		{

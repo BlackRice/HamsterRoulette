@@ -8,6 +8,18 @@ public class PlayerController : Controller {
 			return;
 		}
 
+		if (Input.GetKeyDown(KeyCode.S))
+		{
+			if (hamster.spinningStateInfo == null)
+			{
+				hamster.StartSpinning();
+			}
+			else
+			{
+				hamster.EndSpinning();
+			}
+		}
+
 		if (Input.GetKeyDown(KeyCode.Z)) {
 			hamster.DoPrimaryAttack(hamster.target);
 		}
